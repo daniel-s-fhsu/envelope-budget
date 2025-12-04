@@ -1,15 +1,19 @@
 import express from 'express';
-import { testMongo } from './data/app-db.js';
+import { connectDb, disconnectDb } from './models/app-db.js';
+
+// router imports
+import monthRouter from './routes/monthRoutes.js';
 
 const app = express();
 const port = 3000;
 
-testMongo();
+await connectDb();
 
-app.get('/', (req,res) => {
-    res.send("Hello world");
-});
+app.use(express.json());
 
-app.listen(port, () => {
+app.use('/months', monthRouter)
+
+const server = app.listen(port, () => {
     console.log(`App listening on port ${port}`);
 });
+

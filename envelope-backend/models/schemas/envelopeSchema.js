@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import transactionSchema from './transactionSchema';
+import transactionSchema from './transactionSchema.js';
 
 const envelopeSchema = new Schema({
     name: String,
