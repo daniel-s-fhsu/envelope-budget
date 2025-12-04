@@ -1,0 +1,15 @@
+{
+  "name": "envelope-backend",
+  "version": "1.0.0",
+  "description": "Express backend to the envelope budgeting app",
+  "license": "ISC",
+  "author": "Daniel Seip",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
