@@ -4,12 +4,15 @@
   "description": "Express backend to the envelope budgeting app",
   "license": "ISC",
   "author": "Daniel Seip",
-  "type": "commonjs",
+  "type": "module",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongoose": "^9.0.0"
   }
 }
