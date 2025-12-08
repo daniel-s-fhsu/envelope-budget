@@ -139,3 +139,5 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+envelope-budget-b6a0d-firebase-adminsdk-fbsvc-4e6620ed2b.json

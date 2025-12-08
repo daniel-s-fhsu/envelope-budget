@@ -3,6 +3,8 @@ import envelopeSchema from './envelopeSchema.js';
 import transactionSchema from './transactionSchema.js';
 
 const monthSchema = new Schema({
+    firebaseUserId: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
     userId: Types.ObjectId,  // adjust if user IDs are not Mongo ObjectIds
     monthDigit: Number,
     yearDigit: Number,
