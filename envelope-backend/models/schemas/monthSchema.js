@@ -13,4 +13,7 @@ const monthSchema = new Schema({
     envelopes: [envelopeSchema]
 });
 
+// Ensure a user cannot have duplicate month/year combinations
+monthSchema.index({ firebaseUserId: 1, monthDigit: 1, yearDigit: 1 }, { unique: true });
+
 export default monthSchema;
