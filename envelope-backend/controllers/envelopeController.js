@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import envelopeSchema from '../models/schemas/envelopeSchema.js';
 import monthSchema from '../models/schemas/monthSchema.js';
 import transactionSchema from '../models/schemas/transactionSchema.js';
