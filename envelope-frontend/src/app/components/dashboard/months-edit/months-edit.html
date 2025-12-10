@@ -1,0 +1,32 @@
+<div class="card">
+  <div class="card-header d-flex align-items-center">
+    <strong class="flex-grow-1">Incomes</strong>
+    <button type="button" class="btn btn-link btn-sm" (click)="close()">Close</button>
+  </div>
+  <div class="card-body">
+    <div *ngIf="incomes.length === 0" class="text-muted small">No incomes yet.</div>
+    <div *ngFor="let inc of incomes" class="border rounded p-3 mb-2">
+      <form [formGroup]="formFor(inc._id || inc.name)!" (ngSubmit)="save(inc._id || inc.name)">
+        <div class="row g-2">
+          <div class="col-12 col-md-5">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" formControlName="name" />
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="form-label">Amount</label>
+            <input type="number" class="form-control" formControlName="amount" step="0.01" />
+            <div class="form-text">Current: {{ formFor(inc._id || inc.name)?.value.amount | currency:'USD' }}</div>
+          </div>
+          <div class="col-12 col-md-3 d-flex align-items-end gap-2">
+            <button type="submit" class="btn btn-primary btn-sm" [disabled]="formFor(inc._id || inc.name)?.invalid">
+              Save
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm" (click)="delete(inc._id || inc.name)">
+              Delete
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

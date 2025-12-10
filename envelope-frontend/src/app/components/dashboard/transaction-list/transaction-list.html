@@ -1,13 +1,20 @@
 <div class="card h-100">
   <div class="card-body">
-    <div class="d-flex align-items-center mb-3">
+    <div class="d-flex align-items-center mb-3 gap-2">
       <h6 class="mb-0 flex-grow-1">Transactions</h6>
       <button
         type="button"
         class="btn btn-primary btn-sm"
         [disabled]="!monthId || !envelopeId"
-        (click)="showForm = !showForm">
-        {{ showForm ? 'Close' : 'Add Expense' }}
+        (click)="toggleForm()">
+        {{ showForm ? 'Close' : 'Add' }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-sm"
+        [disabled]="!selectedTransactionId"
+        (click)="toggleEdit()">
+        {{ showEdit ? 'Close' : 'Edit' }}
       </button>
     </div>
     <div *ngIf="showForm" class="mb-3">
@@ -19,11 +26,23 @@
         (closed)="showForm = false">
       </app-transaction-form>
     </div>
+    <div *ngIf="showEdit && selectedTransaction" class="mb-3">
+      <app-transaction-edit
+        [transaction]="selectedTransaction"
+        (saved)="onTransactionEdited($event)"
+        (deleted)="onTransactionDeleted()"
+        (closed)="toggleEdit()">
+      </app-transaction-edit>
+    </div>
     <div *ngIf="!monthId || !envelopeId" class="text-muted small">Select a month and envelope.</div>
     <div *ngIf="loading" class="text-muted small">Loading transactions...</div>
     <div *ngIf="error" class="text-danger small">{{ error }}</div>
     <ul class="list-group" *ngIf="!loading && !error && monthId && envelopeId">
-      <li *ngFor="let tx of transactions" class="list-group-item d-flex justify-content-between">
+      <li
+        *ngFor="let tx of transactions"
+        class="list-group-item d-flex justify-content-between"
+        [class.active]="tx._id === selectedTransactionId"
+        (click)="onSelect(tx._id || tx.name)">
         <div>
           <div class="fw-semibold">{{ tx.name }}</div>
           <small class="text-muted">{{ tx.description || 'No description' }}</small>

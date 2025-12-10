@@ -35,8 +35,10 @@ export class MonthsForm {
       this.status = 'Please fix form errors.';
       return;
     }
+
     this.submitting = true;
     this.status = null;
+
     try {
       // First check for duplicate months
       const duplicate = this.months.some(
@@ -49,10 +51,12 @@ export class MonthsForm {
         this.submitting = false;
         return;
       }
+
       // Verify user auth
       const user = await getAuthUser();
       const token = await getIdTokenForAuth();
       if (!token || !user) throw new Error('Not authenticated');
+
       // Build month json
       const payload: Month = {
         firebaseUserId: user.uid,
@@ -62,15 +66,19 @@ export class MonthsForm {
         incomes: [],
         envelopes: []
       };
+
       //POST req
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
       const saved = await firstValueFrom(
         this.http.post<Month>(`${environment.backendURL}/months`, payload, { headers })
       );
+
       this.status = 'Month added';
       this.monthAdded.emit(saved);
       const now = new Date();
+      
       //Reset and close form
+
       this.form.reset({
         monthDigit: now.getMonth() + 1,
         yearDigit: now.getFullYear()

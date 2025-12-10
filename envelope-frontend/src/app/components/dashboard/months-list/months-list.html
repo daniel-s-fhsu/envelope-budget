@@ -21,8 +21,8 @@
         Remaining: {{ formatTotal(selectedMonth?.totalAvailable) }}
       </div>
       <div class="text-muted small">
-        Income: {{ formatNumber(selectedMonth?.incomeTotal) | number:'1.2-2' }} |
-        Allocated: {{ formatNumber(selectedMonth?.allocatedTotal) | number:'1.2-2' }}
+        Income: {{ toCurrency(formatNumber(selectedMonth?.incomeTotal)) }} |
+        Allocated: {{ toCurrency(formatNumber(selectedMonth?.allocatedTotal)) }}
       </div>
     </div>
     <div class="ms-auto d-flex gap-2">
@@ -35,6 +35,13 @@
         [disabled]="!selectedMonthId"
         (click)="toggleIncomeForm()">
         {{ showIncomeForm ? 'Close' : 'Add Income' }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        [disabled]="!selectedMonthId"
+        (click)="toggleIncomeEdit()">
+        {{ showIncomeEdit ? 'Close' : 'Edit Incomes' }}
       </button>
       <button
         type="button"
@@ -55,6 +62,15 @@
     (transactionAdded)="onIncomeAdded()"
     (closed)="onIncomeClosed()">
   </app-transaction-form>
+</div>
+
+<div *ngIf="showIncomeEdit" class="mb-3">
+  <app-months-edit
+    [incomes]="incomesForSelected"
+    (incomeUpdated)="onIncomeUpdated($event)"
+    (incomeDeleted)="onIncomeDeleted($event)"
+    (closed)="showIncomeEdit = false">
+  </app-months-edit>
 </div>
 
 <div *ngIf="showForm" class="mb-3">

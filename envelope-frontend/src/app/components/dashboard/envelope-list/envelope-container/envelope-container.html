@@ -1,1 +1,40 @@
-<p>envelope-container works!</p>
+<div *ngIf="showButtons" class="d-flex align-items-center">
+  <button
+    type="button"
+    class="btn btn-primary btn-sm"
+    (click)="toggleRequested.emit()"
+    [disabled]="!monthId">
+    {{ showForm ? 'Close' : 'Add' }}
+  </button>
+  <button
+    type="button"
+    class="btn btn-outline-secondary btn-sm ms-2"
+    (click)="editRequested.emit()"
+    [disabled]="!selectedEnvelopeId">
+    {{ showEdit ? 'Close' : 'Edit' }}
+  </button>
+  <div class="flex-grow-1"></div>
+</div>
+
+<div class="list-group mt-3">
+  <button
+    type="button"
+    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+    *ngFor="let env of envelopes"
+    [class.active]="env._id === selectedEnvelopeId"
+    (click)="onSelect(env._id || env.name)">
+    <div>
+      <div class="fw-semibold">{{ env.name }}</div>
+      <small class="text-muted">Allocated: {{ formatAllocated(env.allocated) }}</small>
+    </div>
+    <span
+      class="badge"
+      [class.text-bg-success]="remainingValue(env.remaining, env.allocated) >= 0"
+      [class.text-bg-danger]="remainingValue(env.remaining, env.allocated) < 0">
+      Remaining {{ formatRemaining(env.remaining, env.allocated) }}
+    </span>
+  </button>
+  <div *ngIf="!loading && !error && monthId && envelopes.length === 0" class="list-group-item text-muted">
+    No envelopes yet.
+  </div>
+</div>

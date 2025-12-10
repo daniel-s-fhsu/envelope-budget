@@ -40,6 +40,7 @@ export class TransactionForm {
       this.status = 'Missing required info';
       return;
     }
+    
     this.submitting = true;
     this.status = null;
 
@@ -60,12 +61,13 @@ export class TransactionForm {
       const saved = await firstValueFrom(
         this.http.post<Transaction>(`${environment.backendURL}/transactions`, payload, { headers })
       );
-      
+
       this.transactionAdded.emit(saved);
       if (!this.envelopeId && this.refreshMonths) {
         await this.refreshMonths();
       }
       this.form.reset({ name: '', description: '', amount: 0 });
+      //close the form on submit
       this.closed.emit();
     } catch (err) {
       console.error('Failed to save transaction', err);

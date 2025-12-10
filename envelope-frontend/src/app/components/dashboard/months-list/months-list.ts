@@ -1,9 +1,10 @@
 import { ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
-import { DecimalPipe, NgFor, NgIf } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { MonthsForm } from './months-form/months-form';
 import { TransactionForm } from '../transaction-form/transaction-form';
+import { MonthsEdit } from '../months-edit/months-edit';
 import { Month } from '../../../models/month/month-module';
 import { getAuthUser, getIdTokenForAuth, onAuthChange } from '../../../services/firebase-implementation';
 import { environment } from '../../../../environments/environment';
@@ -12,7 +13,7 @@ import { Unsubscribe } from 'firebase/auth';
 @Component({
   selector: 'app-months-list',
   standalone: true,
-  imports: [NgFor, NgIf, DecimalPipe, MonthsForm, TransactionForm],
+  imports: [NgFor, NgIf, MonthsForm, TransactionForm, MonthsEdit],
   templateUrl: './months-list.html',
   styleUrl: './months-list.css',
 })
@@ -23,6 +24,7 @@ export class MonthsList implements OnInit, OnDestroy {
   loading = false;
   error: string | null = null;
   showIncomeForm = false;
+  showIncomeEdit = false;
   deleting = false;
   private authUnsub: Unsubscribe | null = null;
   selectedMonthId: string | null = null;
@@ -78,6 +80,9 @@ export class MonthsList implements OnInit, OnDestroy {
 
   toggleIncomeForm() {
     this.showIncomeForm = !this.showIncomeForm;
+    if (this.showIncomeForm) {
+      this.showIncomeEdit = false;
+    }
   }
 
   onMonthAdded(month: Month) {
@@ -93,6 +98,9 @@ export class MonthsList implements OnInit, OnDestroy {
 
   async reloadMonths() {
     await this.loadMonths();
+    if (this.selectedMonthId) {
+      this.monthSelected.emit(this.selectedMonthId);
+    }
   }
 
   onFormClosed() {
@@ -110,6 +118,14 @@ export class MonthsList implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  toggleIncomeEdit() {
+    this.showIncomeEdit = !this.showIncomeEdit;
+    if (this.showIncomeEdit) {
+      this.showIncomeForm = false;
+    }
+    this.cdr.detectChanges();
+  }
+
   onSelect(monthId: string) {
     this.selectedMonthId = monthId;
     this.monthSelected.emit(monthId);
@@ -122,17 +138,8 @@ export class MonthsList implements OnInit, OnDestroy {
   }
 
   formatTotal(val: Month['totalAvailable'] | undefined): string {
-    if (val == null) return '$0.00';
-    if (typeof val === 'number') return `$${val.toFixed(2)}`;
-    if (typeof val === 'string') {
-      const num = Number(val);
-      return isNaN(num) ? val : `$${num.toFixed(2)}`;
-    }
-    if ((val as any).$numberDecimal) {
-      const num = Number((val as any).$numberDecimal);
-      return isNaN(num) ? (val as any).$numberDecimal : `$${num.toFixed(2)}`;
-    }
-    return `${val}`;
+    const num = this.formatNumber(val);
+    return this.toCurrency(num);
   }
 
   formatNumber(val: number | string | { $numberDecimal?: string } | undefined): number {
@@ -147,6 +154,10 @@ export class MonthsList implements OnInit, OnDestroy {
       return isNaN(num) ? 0 : num;
     }
     return 0;
+  }
+
+  toCurrency(num: number): string {
+    return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   async deleteSelected() {
@@ -177,5 +188,54 @@ export class MonthsList implements OnInit, OnDestroy {
   get selectedMonth(): Month | undefined {
     if (!this.selectedMonthId) return undefined;
     return this.months.find(m => m._id === this.selectedMonthId);
+  }
+
+  get incomesForSelected(): any[] {
+    return (this.selectedMonth as any)?.incomes ?? [];
+  }
+
+  async onIncomeUpdated(update: { id: string; name: string; amount: number }) {
+    if (!update?.id) return;
+    try {
+      const token = await getIdTokenForAuth();
+      if (!token) throw new Error('Not authenticated');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      await firstValueFrom(
+        this.http.put(`${environment.backendURL}/transactions/${update.id}`, {
+          name: update.name,
+          amount: update.amount
+        }, { headers })
+      );
+      await this.loadMonths();
+      if (this.selectedMonthId) {
+        this.monthSelected.emit(this.selectedMonthId);
+      }
+      this.showIncomeEdit = false;
+      this.cdr.detectChanges();
+    } catch (err) {
+      console.error('Failed to update income', err);
+      this.error = 'Failed to update income';
+    }
+  }
+
+  async onIncomeDeleted(id: string) {
+    if (!id) return;
+    try {
+      const token = await getIdTokenForAuth();
+      if (!token) throw new Error('Not authenticated');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      await firstValueFrom(
+        this.http.delete(`${environment.backendURL}/transactions/${id}`, { headers })
+      );
+      await this.loadMonths();
+      if (this.selectedMonthId) {
+        this.monthSelected.emit(this.selectedMonthId);
+      }
+      this.showIncomeEdit = false;
+      this.cdr.detectChanges();
+    } catch (err) {
+      console.error('Failed to delete income', err);
+      this.error = 'Failed to delete income';
+    }
   }
 }
