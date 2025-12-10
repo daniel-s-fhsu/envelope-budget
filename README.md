@@ -52,3 +52,5 @@ export const environment = {
 ```
 
 You can change the backend url port to match what you are running the backend on.  Firebase will provide settings for that sectiion, it's pretty much a copy and paste of what they provide.
+
+Run the frontend with 'ng serve'
