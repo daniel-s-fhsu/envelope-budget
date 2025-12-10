@@ -8,7 +8,9 @@ const monthSchema = new Schema({
     userId: Types.ObjectId,  // adjust if user IDs are not Mongo ObjectIds
     monthDigit: Number,
     yearDigit: Number,
-    totalAvailable: Schema.Types.Decimal128,
+    totalAvailable: { type: Schema.Types.Decimal128, default: () => new Types.Decimal128('0') },
+    incomeTotal: { type: Schema.Types.Decimal128, default: () => new Types.Decimal128('0') },
+    allocatedTotal: { type: Schema.Types.Decimal128, default: () => new Types.Decimal128('0') },
     incomes: [transactionSchema],  // can have multiple incomes per month
     envelopes: [envelopeSchema]
 });

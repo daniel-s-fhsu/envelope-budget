@@ -2,6 +2,8 @@ import express from 'express';
 import { connectDb, disconnectDb } from './models/app-db.js';
 import { firebaseAuthMiddleware } from './auth/firebase-implementation.js';
 import monthRouter from './routes/monthRoutes.js';
+import envelopeRouter from './routes/envelopeRoutes.js';
+import transactionRouter from './routes/transactionRoutes.js';
 
 const app = express();
 const port = 3000;
@@ -22,6 +24,8 @@ app.use((req, res, next) => {
 app.use(firebaseAuthMiddleware);
 
 app.use('/months', monthRouter);
+app.use('/envelopes', envelopeRouter);
+app.use('/transactions', transactionRouter);
 
 const server = app.listen(port, () => {
     console.log(`App listening on port ${port}`);

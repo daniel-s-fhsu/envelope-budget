@@ -1,0 +1,36 @@
+<div class="card h-100">
+  <div class="card-body">
+    <div class="d-flex align-items-center mb-3">
+      <h6 class="mb-0 flex-grow-1">Transactions</h6>
+      <button
+        type="button"
+        class="btn btn-primary btn-sm"
+        [disabled]="!monthId || !envelopeId"
+        (click)="showForm = !showForm">
+        {{ showForm ? 'Close' : 'Add Expense' }}
+      </button>
+    </div>
+    <div *ngIf="showForm" class="mb-3">
+      <app-transaction-form
+        [monthId]="monthId"
+        [envelopeId]="envelopeId"
+        [label]="'Add Expense'"
+        (transactionAdded)="onTransactionAdded($event)"
+        (closed)="showForm = false">
+      </app-transaction-form>
+    </div>
+    <div *ngIf="!monthId || !envelopeId" class="text-muted small">Select a month and envelope.</div>
+    <div *ngIf="loading" class="text-muted small">Loading transactions...</div>
+    <div *ngIf="error" class="text-danger small">{{ error }}</div>
+    <ul class="list-group" *ngIf="!loading && !error && monthId && envelopeId">
+      <li *ngFor="let tx of transactions" class="list-group-item d-flex justify-content-between">
+        <div>
+          <div class="fw-semibold">{{ tx.name }}</div>
+          <small class="text-muted">{{ tx.description || 'No description' }}</small>
+        </div>
+        <span>{{ formatAmount(tx.amount) }}</span>
+      </li>
+      <li *ngIf="transactions.length === 0" class="list-group-item text-muted">No transactions yet.</li>
+    </ul>
+  </div>
+</div>

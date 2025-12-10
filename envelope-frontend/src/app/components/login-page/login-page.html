@@ -1,0 +1,24 @@
+<div class="container d-flex justify-content-center mt-5">
+  <div class="card shadow-sm" style="max-width: 420px; width: 100%;">
+    <div class="card-body">
+      <h5 class="card-title text-center mb-4">Login</h5>
+      <form (ngSubmit)="onLogin()">
+        <div class="mb-3">
+          <label for="inputEmail" class="form-label">Email address</label>
+          <input type="email" class="form-control" id="inputEmail" [(ngModel)]="email" name="email" required>
+        </div>
+        <div class="mb-3">
+          <label for="inputPassword" class="form-label">Password</label>
+          <input type="password" class="form-control" id="inputPassword" [(ngModel)]="password" name="password" required>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary flex-grow-1">Login</button>
+          <button type="button" class="btn btn-outline-secondary" (click)="onCreate()">Create</button>
+        </div>
+        <div *ngIf="status" class="alert alert-info mt-3 mb-0" role="alert">
+          {{ status }}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

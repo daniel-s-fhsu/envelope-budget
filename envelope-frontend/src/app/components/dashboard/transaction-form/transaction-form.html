@@ -1,0 +1,20 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="border rounded p-3">
+  <div class="mb-2">
+    <label class="form-label" for="txName">Name</label>
+    <input id="txName" type="text" class="form-control" formControlName="name" required>
+  </div>
+  <div class="mb-2">
+    <label class="form-label" for="txDesc">Description</label>
+    <input id="txDesc" type="text" class="form-control" formControlName="description">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="txAmt">Amount</label>
+    <input id="txAmt" type="number" class="form-control" formControlName="amount" step="0.01">
+  </div>
+  <div class="d-flex justify-content-end">
+    <button type="submit" class="btn btn-primary btn-sm" [disabled]="submitting || form.invalid">
+      {{ label }}
+    </button>
+  </div>
+  <div *ngIf="status" class="alert alert-info mt-2 mb-0">{{ status }}</div>
+</form>

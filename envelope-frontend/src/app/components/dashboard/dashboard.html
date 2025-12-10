@@ -1,0 +1,21 @@
+<div class="container-fluid py-3">
+  <div class="row">
+    <div class="col-12">
+      <app-months-list (monthSelected)="onMonthSelected($event)"></app-months-list>
+    </div>
+  </div>
+  <div class="row">
+    <aside class="col-12 col-md-4 col-lg-3 py-3">
+      <app-envelope-list
+        [monthId]="selectedMonthId"
+        (envelopeSelected)="onEnvelopeSelected($event)"
+        (monthsRefresh)="onMonthsRefresh()"></app-envelope-list>
+    </aside>
+    <main class="col-12 col-md-8 col-lg-9 py-3">
+      <app-transaction-list
+        [monthId]="selectedMonthId"
+        [envelopeId]="selectedEnvelopeId"
+        (transactionsChanged)="onTransactionsChanged()"></app-transaction-list>
+    </main>
+  </div>
+</div>

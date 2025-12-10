@@ -1,0 +1,66 @@
+<div class="card shadow-sm mb-3">
+  <div class="card-body d-flex flex-wrap align-items-end gap-3">
+    <div class="flex-grow-1">
+      <label class="form-label mb-1" for="monthSelect">Select Month</label>
+      <select
+        id="monthSelect"
+        class="form-select"
+        [disabled]="loading || !!error || months.length === 0"
+        [value]="selectedMonthId ?? ''"
+        (change)="onSelect($any($event.target).value)">
+        <option value="" disabled>
+          {{ loading ? 'Loading...' : months.length ? 'Choose a month' : 'No months yet' }}
+        </option>
+        <option *ngFor="let month of months" [value]="month._id || month.monthDigit + '-' + month.yearDigit">
+          {{ monthLabel(month) }}
+        </option>
+      </select>
+    </div>
+    <div class="text-end">
+      <div class="badge" [class.text-bg-success]="formatNumber(selectedMonth?.totalAvailable) >= 0" [class.text-bg-danger]="formatNumber(selectedMonth?.totalAvailable) < 0">
+        Remaining: {{ formatTotal(selectedMonth?.totalAvailable) }}
+      </div>
+      <div class="text-muted small">
+        Income: {{ formatNumber(selectedMonth?.incomeTotal) | number:'1.2-2' }} |
+        Allocated: {{ formatNumber(selectedMonth?.allocatedTotal) | number:'1.2-2' }}
+      </div>
+    </div>
+    <div class="ms-auto d-flex gap-2">
+      <button type="button" class="btn btn-primary" (click)="toggleForm()">
+        {{ showForm ? 'Close' : 'Add Month' }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-success"
+        [disabled]="!selectedMonthId"
+        (click)="toggleIncomeForm()">
+        {{ showIncomeForm ? 'Close' : 'Add Income' }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-danger"
+        [disabled]="!selectedMonthId || deleting"
+        (click)="deleteSelected()">
+        {{ deleting ? 'Deleting...' : 'Delete Month' }}
+      </button>
+    </div>
+  </div>
+  <div *ngIf="error" class="card-footer text-danger small">{{ error }}</div>
+</div>
+
+<div *ngIf="showIncomeForm" class="mb-3">
+  <app-transaction-form
+    [monthId]="selectedMonthId"
+    [label]="'Add Income'"
+    (transactionAdded)="onIncomeAdded()"
+    (closed)="onIncomeClosed()">
+  </app-transaction-form>
+</div>
+
+<div *ngIf="showForm" class="mb-3">
+  <app-months-form
+    [months]="months"
+    (monthAdded)="onMonthAdded($event)"
+    (closed)="onFormClosed()">
+  </app-months-form>
+</div>
