@@ -58,9 +58,13 @@ export class MonthsList implements OnInit, OnDestroy {
         this.http.get<Month[]>(`${environment.backendURL}/months`, { headers })
       );
       this.months = results;
-      if (this.months.length && !this.selectedMonthId) {
-        this.selectedMonthId = this.months[0]._id ?? null;
+      const selectedStillExists = this.months.some(m => m._id === this.selectedMonthId);
+      if (!selectedStillExists) {
+        this.selectedMonthId = this.months[0]?._id ?? null;
         this.monthSelected.emit(this.selectedMonthId);
+      } else if (!this.months.length) {
+        this.selectedMonthId = null;
+        this.monthSelected.emit(null);
       }
     } catch (err) {
       console.error('Failed to load months', err);
@@ -170,8 +174,8 @@ export class MonthsList implements OnInit, OnDestroy {
       await firstValueFrom(
         this.http.delete(`${environment.backendURL}/months/${this.selectedMonthId}`, { headers })
       );
-      this.months = this.months.filter(m => (m._id ?? '') !== this.selectedMonthId);
-      this.selectedMonthId = this.months[0]?._id ?? null;
+      this.selectedMonthId = null;
+      await this.loadMonths();
     } catch (err) {
       console.error('Failed to delete month', err);
       this.error = 'Failed to delete month';

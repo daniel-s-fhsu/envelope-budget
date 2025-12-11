@@ -22,7 +22,7 @@ export class LoginPage {
     this.status = null;
     try {
       await login(this.email, this.password);
-      await this.router.navigateByUrl('/');
+      await this.router.navigateByUrl('/dashboard');
     } catch (err) {
       console.error('Login failed', err);
       this.status = 'Login failed';
@@ -33,7 +33,7 @@ export class LoginPage {
     this.status = null;
     try {
       await createUser(this.email, this.password);
-      await this.router.navigateByUrl('/');
+      await this.router.navigateByUrl('/dashboard');
     } catch (err) {
       console.error('Create account failed', err);
       this.status = 'Could not create account';

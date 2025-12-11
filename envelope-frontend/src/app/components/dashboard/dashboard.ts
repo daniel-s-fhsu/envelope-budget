@@ -17,8 +17,11 @@ export class Dashboard {
   @ViewChild(EnvelopeList) envelopeList?: EnvelopeList;
 
   onMonthSelected(monthId: string | null) {
+    const changed = this.selectedMonthId !== monthId;
     this.selectedMonthId = monthId;
-    this.selectedEnvelopeId = null;
+    if (changed) {
+      this.selectedEnvelopeId = null;
+    }
   }
 
   onEnvelopeSelected(envelopeId: string | null) {

@@ -44,12 +44,15 @@ export class EnvelopeList implements OnInit, OnChanges {
   }
 
   async reload() {
-    await this.loadEnvelopes();
+    await this.loadEnvelopes(true);
   }
 
-  async loadEnvelopes() {
+  async loadEnvelopes(preserveSelection = false) {
+    const previousSelectedId = preserveSelection ? this.selectedEnvelopeId : null;
     this.envelopes = [];
-    this.selectedEnvelopeId = null;
+    if (!preserveSelection) {
+      this.selectedEnvelopeId = null;
+    }
 
     //Nothing selected?
     if (!this.monthId) {
@@ -71,7 +74,12 @@ export class EnvelopeList implements OnInit, OnChanges {
         })
       );
       this.envelopes = data;
-      this.selectedEnvelopeId = this.envelopes[0]?._id ?? null;
+      if (preserveSelection && previousSelectedId) {
+        const stillExists = this.envelopes.some(env => env._id === previousSelectedId);
+        this.selectedEnvelopeId = stillExists ? previousSelectedId : this.envelopes[0]?._id ?? null;
+      } else {
+        this.selectedEnvelopeId = this.envelopes[0]?._id ?? null;
+      }
       this.envelopeSelected.emit(this.selectedEnvelopeId);
     } catch (err) {
       console.error('Failed to load envelopes', err);

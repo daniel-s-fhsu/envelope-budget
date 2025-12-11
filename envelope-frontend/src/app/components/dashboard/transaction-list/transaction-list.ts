@@ -79,8 +79,9 @@ export class TransactionList implements OnChanges {
   }
 
   async onTransactionAdded(tx: Transaction) {
-    // reload to ensure remaining/allocated refresh elsewhere
-    await this.loadTransactions();
+    // Optimistically update list to avoid blanking while other panels refresh
+    this.transactions = [tx, ...this.transactions];
+    this.selectedTransactionId = tx._id ?? this.selectedTransactionId;
     this.transactionsChanged.emit();
     this.showForm = false;
     this.showEdit = false;
